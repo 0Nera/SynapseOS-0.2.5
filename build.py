@@ -54,9 +54,15 @@ if __name__ == "__main__":
         else:
             os.system("qemu-img create -f qcow2 -o compat=1.1 ata.qcow2 8G")
 
-        os.chdir("bin/")
+        os.chdir("apps/")
+        os.system("python build.py")
+
+        os.chdir("../bin/")
         with tarfile.open("../isodir/boot/initrd.tar", "w") as tar:
             tar.add("apps/")
+        
+        os.chdir("../")
+
         
         if sys.platform == "linux" or sys.platform == "linux2":
             os.system("grub-mkrescue -o SynapseOS.iso isodir/")
