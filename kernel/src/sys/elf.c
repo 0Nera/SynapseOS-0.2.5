@@ -28,7 +28,6 @@ uint8_t elf_check_header(struct elf_hdr *hdr) {
 }
 
 void *elf_open(const char *fname) { // Returns pointer to ELF file.
-    tty_printf("fname = %s\n", fname);
     if (!vfs_exists(fname)) {
         tty_printf("elf doesnt exist\n");
         return 0;
@@ -140,7 +139,7 @@ void elf_info(const char *name) {
 
 int run_elf_file(const char *name/*, char **argv, char **env __attribute__((unused)), int argc*/) {
     if (!vfs_exists(name)) {
-        tty_printf("elf doesnt exist\n");
+        tty_printf("\nelf doesnt exist\n");
         return 0;
     }
     void *elf_file = elf_open(name);
@@ -150,7 +149,7 @@ int run_elf_file(const char *name/*, char **argv, char **env __attribute__((unus
 
     struct elf_hdr *hdr = (struct elf_hdr*) elf_file;
 
-    qemu_printf("loading segments:\n");
+    qemu_printf("\nloading segments:\n");
     int i;
     for (i = 0; i < hdr->ph_ent_cnt; i++) {
         //printf("Segment [%i/%i]: ", i, hdr->ph_ent_cnt);

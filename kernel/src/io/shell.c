@@ -12,8 +12,9 @@ void ksh_main() {
         tty_setcolor(VESA_LIGHT_GREEN);
         tty_printf("%s>", current_dir);
         tty_setcolor(VESA_LIGHT_GREY);
+
         char *cmd = keyboard_gets();
-        tty_printf("\ncmd: [%s]\n", cmd);
+
         if (strlen(cmd) == 0) {
             continue;
         }
@@ -36,7 +37,7 @@ void ksh_main() {
             if (fname != 0) {
                 cat(tok);
             } else {
-                tty_printf("cat: incorrect argument\n");
+                tty_printf("\ncat: incorrect argument\n");
             }
         } else if (strlen(cmd) > 3 && strncmp(cmd, "cd ", 3) == 0) {
             char dname[100];
@@ -46,7 +47,7 @@ void ksh_main() {
             if (dname != 0) {
                 cd(tok);
             } else {
-                tty_printf("cd: incorrect argument\n");
+                tty_printf("\ncd: incorrect argument\n");
             }
         } else if (strcmp(cmd, "ls") == 0) {
             initrd_list(0, 0);
@@ -60,34 +61,50 @@ void ksh_main() {
             if (fname != 0) {
                 run(tok);
             } else {
-                tty_printf("run: incorrect argument\n");
+                tty_printf("\nrun: incorrect argument\n");
             }
         } else if (strcmp(cmd, "l") == 0) {
          
         } else {
             tty_printf("\nUncnown: [%s]\n", cmd);
-            run_elf_file(cmd);
         }
     }
 }
 
 
 
-void run(char *fname) {
-    if (fname[0] != '/') { // TODO: make function
-        char *temp;
+void run(char *dname) {
+    if (dname[0] != '/') {
+        char temp[256];
+
         strcpy(temp, current_dir);
-        strcat(temp, fname);
-        strcpy(fname, temp);
+
+        temp[strlen(temp) - 1] = 0;
+
+        strcat(temp, dname);
+
+
+        strcpy(dname, temp);
     }
-    run_elf_file(fname);
+
+
+    
+    run_elf_file(dname);
 }
 
 void cd(char *dname) {
     if (dname[0] != '/') {
         char temp[256];
+
         strcpy(temp, current_dir);
+
+        temp[strlen(temp) - 1] = 0;
+
         strcat(temp, dname);
+
+        temp[strlen(temp) - 1] = 0;
+        temp[strlen(temp) - 1] = 0;
+
         strcpy(dname, temp);
     }
 
@@ -99,7 +116,7 @@ void cd(char *dname) {
     if (vfs_exists(dname) && vfs_is_dir(dname)) {
         strcpy(current_dir, dname);
     } else {
-        tty_printf("cd: no such directory\n");
+        tty_printf("\ncd: no such directory\n");
     }
 }
 
@@ -108,20 +125,26 @@ void cat(char *fname) {
     if (fname[0] != '/') {
         char temp[256];
         strcpy(temp, current_dir);
+        temp[strlen(temp) - 1] = 0;
+
         strcat(temp, fname);
+
+        temp[strlen(temp) - 1] = 0;
+        temp[strlen(temp) - 1] = 0;
+
         strcpy(fname, temp);
     }
 
     char *buf = (char*) kheap_malloc(1000);
 
     if (!vfs_exists(fname)) {
-        tty_printf("cat: error file not found\n");
+        tty_printf("\ncat: error file not found\n");
     } else {
         uint32_t fsize = vfs_get_size(fname);
         int res = vfs_read(fname, 0, fsize, buf);
         (void)res;
         buf[fsize] = '\0';
-        tty_printf("cat: file %s:\n\n%s\n", fname, buf);
+        tty_printf("%s:\n\n%s\n", fname, buf);
         kheap_free(buf);
     }
 }
