@@ -142,3 +142,13 @@ void qemu_printf(char *text, ...) {
     // pass print the output handle the format text and the first argument
     qemu_print(text, args);
 }
+
+
+
+void reboot() {
+    uint8_t good = 0x02;
+    while (good & 0x02)
+        good = inb(0x64);
+    outb(0x64, 0xFE);
+    asm volatile("hlt");
+}

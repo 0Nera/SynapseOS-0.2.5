@@ -187,13 +187,7 @@ void keyboard_handler_main(void) {
         }
 
         if (keycode == ENTER_KEY_CODE) {
-            /*if (row > 24){
-                row = 25;
-                video_scroll();
-            } else {
-                row++;
-            }
-            col = -1;*/
+
             if (input_type == 1) {
                 string_mem_counter = 0;
                 memset(string_mem, 0, 256);
@@ -202,12 +196,12 @@ void keyboard_handler_main(void) {
         }
 
         if (keycode == 71) {
-            tty_printf("EXIT");
-            //alive = 0;
+            qemu_printf("\n\nEXIT");
+            reboot();
             return;
         }
 
-        if (string_mem_counter > 256) {
+        if (string_mem_counter >= 256) {
             tty_printf("Buffer string_mem is full!!");
             return;
         }
@@ -234,6 +228,17 @@ int keyboard_getchar() {
     input_type = 1;
     tty_putchar(last_char);
     return last_char;
+}
+
+int keyboard_getscancode() {
+    input_type = 2;
+
+    while (input_type != -2) {
+        keyboard_handler_main();
+    }
+
+    input_type = 1;
+    return keycode;
 }
 
 char *keyboard_gets() {
