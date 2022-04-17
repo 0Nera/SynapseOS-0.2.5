@@ -57,7 +57,10 @@ if __name__ == "__main__":
         os.chdir("apps/")
         os.system("python build.py")
 
-        os.chdir("../bin/")
+        shutil.copytree("../bin/apps", "../initrd/apps")
+
+        os.chdir("../initrd")
+
         with tarfile.open("../isodir/boot/initrd.tar", "w") as tar:
             tar.add("apps/")
         
