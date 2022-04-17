@@ -33,6 +33,6 @@
 enum {
     VERSION_MAJOR = 0, 
     VERSIOn_MINOR = 2, 
-    VERSION_PATCH = 3
+    VERSION_PATCH = 4
 };
 
