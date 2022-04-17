@@ -9,7 +9,7 @@ x86=$(KD)/arch/x86
 ISODIR=isodir/
 INCLUDE_DIR=$(KD)/include/
 
-CC=i686-elf-gcc -g -ffreestanding -Wall -Wextra -O0 -I $(KD)/include/
+CC=i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I $(KD)/include/
 
 LDFLAGS=-T linker.ld -ffreestanding -nostdlib -lgcc
 CCFLAGS=-g -I include -ffreestanding -Wall -Wextra -O0 -I $(KD)/include/
@@ -27,15 +27,6 @@ OBJ=$(SYS_OBJ) $(ARCH_OBJ) $(MEM_OBJ) $(DRIVERS_OBJ) $(IO_OBJ) $(INTERRUPTS_OBJ)
 
 
 kernel: 
-	( rmdir bin/ /S /Q && echo recreate bin ) || echo create bin
-	mkdir bin
-	mkdir bin/kernel
-	mkdir bin/kernel/mem
-	mkdir bin/kernel/drivers
-	mkdir bin/kernel/io
-	mkdir bin/kernel/interrupts
-	mkdir bin/kernel/libk
-
 	$(CC) $(CFLAGS) -c $(KD)/kernel.c 				-o $(OUTK)/kernel.o
 	$(CC) $(CFLAGS) -c $(x86)/starter.s 			-o $(OUTK)/starter.o
 	$(CC) $(CFLAGS) -c $(x86)/interrupts.s 			-o $(OUTK)/interrupts.o
