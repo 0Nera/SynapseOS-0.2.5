@@ -1,6 +1,5 @@
 .PHONY: kernel winiso
 
-TARGET_ELF=kernel.elf
 
 OUTK=bin/kernel
 KD=kernel
