@@ -83,6 +83,8 @@ void run(char *dname) {
 
         strcat(temp, dname);
 
+        temp[strlen(temp) - 1] = 0;
+        temp[strlen(temp) - 1] = 0;
 
         strcpy(dname, temp);
     }
