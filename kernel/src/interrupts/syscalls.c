@@ -7,6 +7,10 @@ uint32_t sc_puts(char *str) {
     return (uint32_t)0;
 }
 
+uint32_t sc_getscancode() {
+    return keyboard_getscancode();
+}
+
 uint32_t sc_getchar() {
     return keyboard_getchar();
 }
@@ -35,11 +39,8 @@ void syscall_handler(struct regs *r) {
             //tty_printf("str = %x\n", (char*) (argptr[0]));
             result = sc_puts((char*) (argptr[0]));
             break;
-        case SC_CODE_getchar:
-            result = sc_getchar();
-            break;
-        case SC_CODE_gets:
-            result = sc_gets();
+        case SC_CODE_getscancode:
+            result = sc_getscancode();
             break;
         case SC_CODE_putpixel:
             result = sc_putpixel((int) (argptr[0]), (int) (argptr[1]), (uint32_t)(argptr[2]));

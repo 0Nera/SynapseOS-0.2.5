@@ -63,8 +63,8 @@ void ksh_main() {
             } else {
                 tty_printf("\nrun: incorrect argument\n");
             }
-        } else if (strcmp(cmd, "l") == 0) {
-         
+        } else if (strcmp(cmd, "") == 0) {
+
         } else {
             tty_printf("\nUncnown: [%s]\n", cmd);
         }
