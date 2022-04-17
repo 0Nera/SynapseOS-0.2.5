@@ -45,6 +45,7 @@ def build_all():
 
     os.system("i686-elf-gcc -T kernel/link.ld -nostdlib -lgcc -o isodir/boot/kernel.elf " + OBJ)
 
+
 if __name__ == "__main__":
     try:
         build_all()
@@ -69,7 +70,7 @@ if __name__ == "__main__":
 
         
         if sys.platform == "linux" or sys.platform == "linux2":
-            os.system("grub-mkrescue -o SynapseOS.iso isodir/")
+            os.system("""grub-mkrescue -o "SynapseOS.iso" isodir/ -V SynapseOS""")
         else:
             os.system("""wsl grub-mkrescue -o "SynapseOS.iso" isodir/ -V SynapseOS """)
 
