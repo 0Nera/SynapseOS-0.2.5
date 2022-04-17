@@ -1,60 +1,49 @@
 import os, shutil, sys, tarfile, os.path
 
 
-OUTK        = "bin/kernel"
-KD          = "kernel"
-KS          = "kernel/src"
-x86         = "kernel/arch/x86"
-ISODIR      = "isodir/"
-INCLUDE_DIR = "kernel/include"
+SYS_OBJ = "bin/kernel/kernel.o bin/kernel/sys/elf.o"
+ARCH_OBJ = "bin/kernel/starter.o bin/kernel/interrupts.o bin/kernel/paging.o"
+MEM_OBJ = "bin/kernel/mem/pmm.o bin/kernel/mem/vmm.o bin/kernel/mem/kheap.o"
+DRIVERS_OBJ = "bin/kernel/drivers/vfs.o bin/kernel/drivers/ramdisk.o bin/kernel/drivers/keyboard.o"
+IO_OBJ = "bin/kernel/io/tty.o bin/kernel/io/vgafnt.o bin/kernel/io/ports.o bin/kernel/io/shell.o"
+INTERRUPTS_OBJ = "bin/kernel/interrupts/gdt.o bin/kernel/interrupts/idt.o bin/kernel/interrupts/tss.o bin/kernel/interrupts/syscalls.o"
+LIBK_OBJ = "bin/kernel/libk/stdlib.o bin/kernel/libk/string.o"
 
-CC          = f"i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include//"
-
-LDFLAGS     = "-T linker.ld -nostdlib -lgcc"
-
-SYS_OBJ         = f"{OUTK}//kernel.o {OUTK}//sys/elf.o"
-ARCH_OBJ        = f"{OUTK}//starter.o {OUTK}//interrupts.o {OUTK}//paging.o"
-MEM_OBJ         = f"{OUTK}//mem/pmm.o {OUTK}//mem/vmm.o {OUTK}//mem/kheap.o"
-DRIVERS_OBJ     = f"{OUTK}//drivers/vfs.o {OUTK}//drivers/ramdisk.o {OUTK}//drivers/keyboard.o"
-IO_OBJ          = f"{OUTK}//io/tty.o {OUTK}//io/vgafnt.o {OUTK}//io/ports.o {OUTK}//io/shell.o"
-INTERRUPTS_OBJ  = f"{OUTK}//interrupts/gdt.o {OUTK}//interrupts/idt.o {OUTK}//interrupts/tss.o {OUTK}//interrupts/syscalls.o"
-LIBK_OBJ        = f"{OUTK}//libk/stdlib.o {OUTK}//libk/string.o"
-
-OBJ             = f"{SYS_OBJ} {ARCH_OBJ} {MEM_OBJ} {DRIVERS_OBJ} {IO_OBJ} {INTERRUPTS_OBJ} {LIBK_OBJ}"
+OBJ = SYS_OBJ + " " + ARCH_OBJ + " " + MEM_OBJ + " " + DRIVERS_OBJ + " " + IO_OBJ + " " + INTERRUPTS_OBJ + " " + LIBK_OBJ
 
 
 def build_all():
     print("Building kernel")
 
-    os.system(f"{CC} -c kernel/kernel.c 		        -o {OUTK}//kernel.o")
-	os.system(f"{CC} -c {x86}//starter.s 			-o {OUTK}//starter.o")
-	os.system(f"{CC} -c {x86}//interrupts.s 		-o {OUTK}//interrupts.o")
-	os.system(f"{CC} -c {x86}//paging.s 		    -o {OUTK}//paging.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/kernel.c -o bin/kernel/kernel.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/arch/x86/starter.s -o bin/kernel/starter.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/arch/x86/interrupts.s -o bin/kernel/interrupts.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/arch/x86/paging.s -o bin/kernel/paging.o")
 
-	os.system(f"{CC} -c {KS}//mem/pmm.c 		    -o {OUTK}//mem/pmm.o")
-	os.system(f"{CC} -c {KS}//mem/vmm.c 		    -o {OUTK}//mem/vmm.o")
-	os.system(f"{CC} -c {KS}//mem/kheap.c 	        -o {OUTK}//mem/kheap.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/mem/pmm.c -o bin/kernel/mem/pmm.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/mem/vmm.c -o bin/kernel/mem/vmm.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/mem/kheap.c -o bin/kernel/mem/kheap.o")
 
-	os.system(f"{CC} -c {KS}//drivers/vfs.c 	    -o {OUTK}//drivers/vfs.o")
-	os.system(f"{CC} -c {KS}//drivers/ramdisk.c     -o {OUTK}//drivers/ramdisk.o")
-	os.system(f"{CC} -c {KS}//drivers/keyboard.c    -o {OUTK}//drivers/keyboard.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/drivers/vfs.c -o bin/kernel/drivers/vfs.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/drivers/ramdisk.c -o bin/kernel/drivers/ramdisk.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/drivers/keyboard.c -o bin/kernel/drivers/keyboard.o")
 
-	os.system(f"{CC} -c {KS}//io/tty.c 		        -o {OUTK}//io/tty.o")
-	os.system(f"{CC} -c {KS}//io/vgafnt.c 	        -o {OUTK}//io/vgafnt.o")
-	os.system(f"{CC} -c {KS}//io/ports.c 	        -o {OUTK}//io/ports.o")
-	os.system(f"{CC} -c {KS}//io/shell.c 	        -o {OUTK}//io/shell.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/io/tty.c -o bin/kernel/io/tty.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/io/vgafnt.c -o bin/kernel/io/vgafnt.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/io/ports.c -o bin/kernel/io/ports.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/io/shell.c -o bin/kernel/io/shell.o")
 
-	os.system(f"{CC} -c {KS}//interrupts/gdt.c      -o {OUTK}//interrupts/gdt.o")
-	os.system(f"{CC} -c {KS}//interrupts/idt.c      -o {OUTK}//interrupts/idt.o")
-	os.system(f"{CC} -c {KS}//interrupts/tss.c      -o {OUTK}//interrupts/tss.o")
-	os.system(f"{CC} -c {KS}//interrupts/syscalls.c -o {OUTK}//interrupts/syscalls.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/interrupts/gdt.c -o bin/kernel/interrupts/gdt.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/interrupts/idt.c -o bin/kernel/interrupts/idt.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/interrupts/tss.c -o bin/kernel/interrupts/tss.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/interrupts/syscalls.c -o bin/kernel/interrupts/syscalls.o")
 
-	os.system(f"{CC} -c {KS}//libk/stdlib.c 	    -o {OUTK}//libk/stdlib.o")
-	os.system(f"{CC} -c {KS}//libk/string.c 	    -o {OUTK}//libk/string.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/libk/stdlib.c -o bin/kernel/libk/stdlib.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/libk/string.c -o bin/kernel/libk/string.o")
 
-	os.system(f"{CC} -c {KS}//sys/elf.c 		    -o {OUTK}//sys/elf.o")
+    os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/sys/elf.c -o bin/kernel/sys/elf.o")
 
-	os.system(f"{CC} {LDFLAGS} -o {ISODIR}//boot/kernel.elf {OBJ} ")
+    os.system("i686-elf-gcc -T kernel/link.ld -nostdlib -lgcc -o isodir/boot/kernel.elf " + OBJ)
 
 if __name__ == "__main__":
     try:
@@ -65,11 +54,15 @@ if __name__ == "__main__":
         else:
             os.system("qemu-img create -f qcow2 -o compat=1.1 ata.qcow2 8G")
 
-        if sys.platform == "linux" or sys.platform == "linux2":
-            os.system("grub-mkrescue -o SynapseOS.iso {ISODIR)")
-        else:
-            os.system("wsl grub-mkrescue -o SynapseOS.iso {ISODIR)")
+        os.chdir("bin/")
+        with tarfile.open("../isodir/boot/initrd.tar", "w") as tar:
+            tar.add("apps/")
         
+        if sys.platform == "linux" or sys.platform == "linux2":
+            os.system("grub-mkrescue -o SynapseOS.iso isodir/")
+        else:
+            os.system("""wsl grub-mkrescue -o "SynapseOS.iso" isodir/ -V SynapseOS """)
+
         os.system("qemu-system-i386 -m 4 -name SynapseOS -soundhw all -cdrom SynapseOS.iso -hda ata.qcow2 -serial  file:Qemu.log -no-reboot")
     except Exception as E:
         print(E)
