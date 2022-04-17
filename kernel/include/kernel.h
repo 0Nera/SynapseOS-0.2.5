@@ -27,7 +27,7 @@
 #include <libk/string.h>
 #include <libk/stdlib.h>
 
-#include <sdk/elf.h>
+#include <sys/elf.h>
 
 
 enum {
