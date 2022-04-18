@@ -29,8 +29,8 @@ void kernel(int magic_number, struct multiboot_info *mboot_info) {
     idt_init();             //  / Установка и настройка прерываний 
     pmm_init(mboot_info);   // Инициализация менеджера физической памяти
 
-    uint32_t initrd_beg = *(uint32_t*) (mboot_info->mods_addr);     //  Установка начала памяти рамдиска
-    uint32_t initrd_end = *(uint32_t*) (mboot_info->mods_addr + 4); //  Установка конца памяти рамдиска
+    uint32_t initrd_beg = *(uint32_t*) (mboot_info->mods_addr);     //  Получение начала памяти рамдиска
+    uint32_t initrd_end = *(uint32_t*) (mboot_info->mods_addr + 4); //  Получение конца памяти рамдиска
 
     vmm_init();                         // Инициализация менеджера виртуальной памяти
     kheap_init();                       // Инициализация "кучи" ядра
@@ -45,5 +45,5 @@ void kernel(int magic_number, struct multiboot_info *mboot_info) {
     tty_printf("List of files:");       // \ Вывод списка файлов
     initrd_list(0, "  ");               // /
 
-    ksh_main();                         // Активация консольного интерпритатора
+    ksh_main();                         // Активация консольного интерпретатора
 }
