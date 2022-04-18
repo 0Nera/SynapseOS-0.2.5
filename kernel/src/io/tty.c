@@ -110,6 +110,17 @@ void set_pixel(int x, int y, uint32_t color) {
     back_framebuffer_addr[where + 2] = (color >> 16) & 255;
 
 }
+void set_line(int x, int y, int xe, int ye, uint32_t color){
+    for (int i = x; i < xe; i++)
+    {
+        for (int j = y; j < ye; j++)
+        {
+            set_pixel(i, j, color);
+        }
+        
+    }
+    
+}
 /*
     tty_putchar - вывод одного символа
 */

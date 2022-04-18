@@ -24,10 +24,26 @@ uint32_t sc_putpixel(int x, int y, uint32_t color) {
     return (uint32_t)0;
 }
 
+uint32_t sc_drawline(int x, int y, int xe, int ye, uint32_t color){
+    set_line(x, y, xe, ye, color)
+    return (uint32_t)0;
+}
+
 void syscall_init() {
     register_interrupt_handler(SYSCALL_IDT_INDEX, &syscall_handler);
     qemu_putstring("SYSCALL INIT\n");
 }
+
+uint32_t* malloc(int size){
+    return (uint32_t*)kheap_malloc(size);
+}
+
+uint32_t free(void* addr){
+    
+    return (uint32_t)0;
+}
+
+
 
 void syscall_handler(struct regs *r) {
     uint32_t result = -1;
@@ -43,9 +59,18 @@ void syscall_handler(struct regs *r) {
         case SC_CODE_getscancode:
             result = sc_getscancode();
             break;
+        case SC_CODE_malloc:
+            result = malloc((int)argptr[0])
+            break;
+        case SC_CODE_malloc:
+            free(argptr[0])
+            break;
         case SC_CODE_putpixel:
             result = sc_putpixel((int) (argptr[0]), (int) (argptr[1]), (uint32_t)(argptr[2]));
             break;
+        case SC_CODE_drawline:
+            result = sc_drawline((int) (argptr[0]), (int) (argptr[1]), argptr[2]), (int) (argptr[3]), (uint32_t)(argptr[4]))
+
         default: 
             tty_printf("Invalid syscall #%x\n", r->eax);
     }
