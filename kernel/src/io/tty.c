@@ -42,6 +42,7 @@ void init_vbe(multiboot_info *mboot) {
     qemu_putstring("VBE create_back_framebuffer\n");
 
     create_back_framebuffer();
+    qemu_putstring("VBE INIT\n");
 }
 
 void create_back_framebuffer() {
@@ -54,11 +55,21 @@ void create_back_framebuffer() {
 /*
     tty_init - очистка экрана и сброс настроек tty
 */
-void tty_init() {
+void tty_init(struct multiboot_info *mboot_info) {
     tty_pos_y = 0;
     tty_pos_x = 0;
 
     tty_text_color = VESA_LIGHT_CYAN;
+
+    svga_mode_info_t *svga_mode = (svga_mode_info_t*) mboot_info->vbe_mode_info;
+
+    framebuffer_addr = (uint8_t *)svga_mode->physbase;
+    framebuffer_pitch = svga_mode->pitch;
+    framebuffer_bpp = svga_mode->bpp;
+    framebuffer_width = svga_mode->screen_width;
+    framebuffer_height = svga_mode->screen_height;
+    framebuffer_size = framebuffer_height * framebuffer_pitch;
+    back_framebuffer_addr = framebuffer_addr;
 }
 
 void tty_scroll() {
