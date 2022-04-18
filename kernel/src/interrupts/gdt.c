@@ -72,6 +72,8 @@ void gdt_init() {
     // Flush out the old GDT and install the new changes!
     gdt_flush(&gp);
 
+    qemu_putstring("GDT INIT\n");
+    
     // Initialize TSS
     tss_init(5, 0x10, 0);
     tss_flush();

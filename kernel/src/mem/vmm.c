@@ -155,6 +155,7 @@ void vmm_init() {
 
     enable_paging((physical_addr) kernel_page_dir);
 
+    qemu_putstring("VMM INIT\n");
 }
 
 void vmm_test() {

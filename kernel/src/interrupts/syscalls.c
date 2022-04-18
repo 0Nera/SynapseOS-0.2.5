@@ -26,6 +26,7 @@ uint32_t sc_putpixel(int x, int y, uint32_t color) {
 
 void syscall_init() {
     register_interrupt_handler(SYSCALL_IDT_INDEX, &syscall_handler);
+    qemu_putstring("SYSCALL INIT\n");
 }
 
 void syscall_handler(struct regs *r) {

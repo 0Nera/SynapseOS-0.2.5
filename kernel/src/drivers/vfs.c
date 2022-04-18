@@ -231,7 +231,7 @@ void vfs_get_file_name_from_path(char *fpath, char *buf) {
 }
 
 void vfs_init() {
-    //qemu_printf("\nVFS: Allocating memory for structures.");    
     vfs_mount_points = (vfs_mount_info_t**) kheap_malloc(sizeof(vfs_mount_info_t) * MOUNTPOINTS_SIZE);
     __vfs_init = 1;
+    qemu_putstring("VFS INIT\n");
 }

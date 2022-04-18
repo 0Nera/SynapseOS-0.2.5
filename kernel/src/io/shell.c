@@ -5,10 +5,9 @@ char current_dir[256] = "/initrd/";
 void ksh_main() {
 
     while (1) {
-        
 
         tty_setcolor(VESA_LIGHT_CYAN);
-        tty_printf("\nROOT ");
+        tty_printf("\nTestUser ");
         tty_setcolor(VESA_LIGHT_GREEN);
         tty_printf("%s>", current_dir);
         tty_setcolor(VESA_LIGHT_GREY);
@@ -66,7 +65,8 @@ void ksh_main() {
         } else if (strcmp(cmd, "") == 0) {
 
         } else {
-            tty_printf("\nUncnown: [%s]\n", cmd);
+            tty_setcolor(VESA_LIGHT_RED);
+            tty_printf("\nUnknown: [%s]\n", cmd);
         }
     }
 }
@@ -83,14 +83,13 @@ void run(char *dname) {
 
         strcat(temp, dname);
 
-        temp[strlen(temp) - 1] = 0;
-        temp[strlen(temp) - 1] = 0;
 
         strcpy(dname, temp);
     }
 
 
     
+    qemu_printf("run dname %s\n", dname);
     run_elf_file(dname);
 }
 
@@ -115,6 +114,7 @@ void cd(char *dname) {
         strcat(dname, "/");
     }
 
+    qemu_printf("cd dname %s\n", dname);
     if (vfs_exists(dname) && vfs_is_dir(dname)) {
         strcpy(current_dir, dname);
     } else {
@@ -131,22 +131,25 @@ void cat(char *fname) {
 
         strcat(temp, fname);
 
-        temp[strlen(temp) - 1] = 0;
-        temp[strlen(temp) - 1] = 0;
 
         strcpy(fname, temp);
     }
 
     char *buf = (char*) kheap_malloc(1000);
 
+    qemu_printf("cat fname %s\n", fname);
     if (!vfs_exists(fname)) {
+
         tty_printf("\ncat: error file not found\n");
     } else {
         uint32_t fsize = vfs_get_size(fname);
         int res = vfs_read(fname, 0, fsize, buf);
+
         (void)res;
         buf[fsize] = '\0';
+
         tty_printf("%s:\n\n%s\n", fname, buf);
-        kheap_free(buf);
+        
     }
+    kheap_free(buf);
 }

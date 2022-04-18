@@ -258,6 +258,7 @@ void idt_init() {
         IRQ_clear_mask(i);
     }
 
+    qemu_putstring("IDT INIT\n");
 }
 
 
