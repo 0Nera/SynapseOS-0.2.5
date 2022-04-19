@@ -65,7 +65,6 @@ if __name__ == "__main__":
 
         with tarfile.open("../isodir/boot/initrd.tar", "w") as tar:
             tar.add("apps/")
-            tar.add("readme.txt")
         
         os.chdir("../")
 

@@ -10,15 +10,7 @@
 // Входная точка ядра SynapseOS
 void kernel(int magic_number, struct multiboot_info *mboot_info) {
     
-    tty_init();
-    svga_mode_info_t *svga_mode = (svga_mode_info_t*) mboot_info->vbe_mode_info;
-    framebuffer_addr = (uint8_t *)svga_mode->physbase; //vmm_temp_map_page(svga_mode->physbase);
-    framebuffer_pitch = svga_mode->pitch;
-    framebuffer_bpp = svga_mode->bpp;
-    framebuffer_width = svga_mode->screen_width;
-    framebuffer_height = svga_mode->screen_height;
-    framebuffer_size = framebuffer_height * framebuffer_pitch;
-    back_framebuffer_addr = framebuffer_addr;
+    tty_init(mboot_info);
 
     tty_printf("SynapseOS %d.%d.%d\n", 
         VERSION_MAJOR, VERSIOn_MINOR, VERSION_PATCH

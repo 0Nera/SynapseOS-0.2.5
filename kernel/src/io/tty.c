@@ -51,14 +51,25 @@ void create_back_framebuffer() {
     //tty_printf("init_vbe: [c0800000]->%x\n", page_table_entry_is_writable(GET_PTE(0xC0800000)));
     memset(back_framebuffer_addr, 0, framebuffer_size); //causes page fault at c0800000 when this line is placed in the end of init_vbe
 }
+
 /*
     tty_init - очистка экрана и сброс настроек tty
 */
-void tty_init() {
+void tty_init(struct multiboot_info *mboot_info) {
     tty_pos_y = 0;
     tty_pos_x = 0;
 
     tty_text_color = VESA_LIGHT_CYAN;
+
+    svga_mode_info_t *svga_mode = (svga_mode_info_t*) mboot_info->vbe_mode_info;
+
+    framebuffer_addr = (uint8_t *)svga_mode->physbase;
+    framebuffer_pitch = svga_mode->pitch;
+    framebuffer_bpp = svga_mode->bpp;
+    framebuffer_width = svga_mode->screen_width;
+    framebuffer_height = svga_mode->screen_height;
+    framebuffer_size = framebuffer_height * framebuffer_pitch;
+    back_framebuffer_addr = framebuffer_addr;
 }
 
 void tty_scroll() {
@@ -99,6 +110,17 @@ void set_pixel(int x, int y, uint32_t color) {
     back_framebuffer_addr[where + 2] = (color >> 16) & 255;
 
 }
+
+void set_line(int x, int y, int xe, int ye, uint32_t color){
+    for (int i = x; i < xe; i++) {
+        for (int j = y; j < ye; j++) {
+            set_pixel(i, j, color);
+        }
+        
+    }
+    
+}
+
 /*
     tty_putchar - вывод одного символа
 */
