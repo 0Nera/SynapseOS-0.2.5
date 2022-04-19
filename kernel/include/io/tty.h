@@ -39,7 +39,7 @@ enum colors  {
     VESA_WHITE = 0xFFFFFF,
 };
 
-void tty_init(struct multiboot_info *mboot_info);
+void tty_init();
 void tty_printf(char *text, ...);
 
 typedef struct svga_mode_info {

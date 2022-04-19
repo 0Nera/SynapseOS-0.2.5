@@ -42,7 +42,6 @@ void init_vbe(multiboot_info *mboot) {
     qemu_putstring("VBE create_back_framebuffer\n");
 
     create_back_framebuffer();
-    qemu_putstring("VBE INIT\n");
 }
 
 void create_back_framebuffer() {
@@ -52,6 +51,7 @@ void create_back_framebuffer() {
     //tty_printf("init_vbe: [c0800000]->%x\n", page_table_entry_is_writable(GET_PTE(0xC0800000)));
     memset(back_framebuffer_addr, 0, framebuffer_size); //causes page fault at c0800000 when this line is placed in the end of init_vbe
 }
+
 /*
     tty_init - очистка экрана и сброс настроек tty
 */
@@ -110,17 +110,17 @@ void set_pixel(int x, int y, uint32_t color) {
     back_framebuffer_addr[where + 2] = (color >> 16) & 255;
 
 }
+
 void set_line(int x, int y, int xe, int ye, uint32_t color){
-    for (int i = x; i < xe; i++)
-    {
-        for (int j = y; j < ye; j++)
-        {
+    for (int i = x; i < xe; i++) {
+        for (int j = y; j < ye; j++) {
             set_pixel(i, j, color);
         }
         
     }
     
 }
+
 /*
     tty_putchar - вывод одного символа
 */

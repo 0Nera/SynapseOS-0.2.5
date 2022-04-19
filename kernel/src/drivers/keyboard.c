@@ -104,7 +104,6 @@ void keyboard_install(void) {
     input_type = 1;
     // 0xFD это 11111101 - включает IRQ1 (клавиатура)
     outb(0x21, 0xFD);
-    qemu_putstring("KEYBOARD INIT\n");
 }
 
 void keyboard_handler_main(void) {

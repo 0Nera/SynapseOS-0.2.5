@@ -1,7 +1,6 @@
 #include <kernel.h>
 
 
-
 uint32_t sc_puts(char *str) {
     tty_printf("%s", str);
     return (uint32_t)0;
@@ -44,12 +43,10 @@ uint32_t free(void* addr){
 }
 
 
-
 void syscall_handler(struct regs *r) {
     uint32_t result = -1;
 
     uint32_t* argptr = (uint32_t*) (r->ebx);
-    qemu_printf("argptr[0] = d=%d, c=[%c] s=[%s]\n", argptr[0], argptr[0], argptr[0]);
 
 
     switch (r->eax) {
@@ -77,7 +74,5 @@ void syscall_handler(struct regs *r) {
             tty_printf("Invalid syscall #%x\n", r->eax);
     }
     qemu_printf("result = %d, [%c] [%s]\n", result, result, result);
-    
-    r->eax = result;
 
 }

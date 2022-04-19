@@ -17,7 +17,7 @@ void kheap_init() {
     kheap_allocs_num = 0;
     kheap_memory_used = 0;
 
-    qemu_putstring("KHEAP INIT\n");
+    //tty_printf("Kernel heap manager initialised!\n");
 }
 
 // Increase kernel heap by some amount, this will be rounded up by the page size 

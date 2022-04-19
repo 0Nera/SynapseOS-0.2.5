@@ -112,26 +112,26 @@ void elf_info_short(const char *name) {
 
 void elf_info(const char *name) {
     if (!vfs_exists(name)) {
-        qemu_printf("\nelf [%s] does not exist\n", name);
+        tty_printf("\nelf [%s] does not exist\n", name);
         return 0;
     }
     void *elf_file = elf_open(name);
-    qemu_printf("pointer to this elf_file = %x\n", elf_file);
+    tty_printf("pointer to this elf_file = %x\n", elf_file);
     if (elf_file == NULL) {
         return;
     }
 
     struct elf_hdr *hdr = (struct elf_hdr*) elf_file;
-    qemu_printf("\tName: %s\n", name);
-    qemu_printf("\tFile size: %u\n\tELF file info:\n", vfs_get_size(name));
+    tty_printf("\tName: %s\n", name);
+    tty_printf("\tFile size: %u\n\tELF file info:\n", vfs_get_size(name));
     elf_hdr_info(hdr);
 
     int i;
     for (i = 0; i < hdr->sh_ent_cnt; i++) {
         struct elf_section_header *shdr = (struct elf_section_header*) (elf_file + hdr->shoff + hdr->sh_ent_size * i);
-        qemu_printf("\t\t\tSection %d:\n", i);
-        qemu_printf("\t\t\t\tActual section offset: %u\n\t\t\t\tSection name offset in string table: %d\n", shdr->offset, shdr->name);
-        qemu_printf("\t\t\t\tSection name: %s\n", elf_get_section_name(elf_file, i));
+        tty_printf("\t\t\tSection %d:\n", i);
+        tty_printf("\t\t\t\tActual section offset: %u\n\t\t\t\tSection name offset in string table: %d\n", shdr->offset, shdr->name);
+        tty_printf("\t\t\t\tSection name: %s\n", elf_get_section_name(elf_file, i));
     }
 
     //kheap_free(elf_file); //!!!!!!
@@ -142,7 +142,6 @@ int run_elf_file(const char *name/*, char **argv, char **env __attribute__((unus
         tty_printf("\nelf [%s] does not exist\n", name);
         return 0;
     }
-    elf_info(name);
     void *elf_file = elf_open(name);
     if (elf_file == NULL) {
         return -1;
@@ -153,7 +152,7 @@ int run_elf_file(const char *name/*, char **argv, char **env __attribute__((unus
     qemu_printf("\nloading segments:\n");
     int i;
     for (i = 0; i < hdr->ph_ent_cnt; i++) {
-        qemu_printf("Segment [%i/%i]: ", i, hdr->ph_ent_cnt);
+        //printf("Segment [%i/%i]: ", i, hdr->ph_ent_cnt);
         struct elf_program_header *phdr = elf_get_program_header(elf_file, i);
         if (phdr->type != SEGTYPE_LOAD) {
             continue; // We only can load segments to the memory, so just skip it.

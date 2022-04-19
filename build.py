@@ -43,7 +43,6 @@ def build_all():
 
     os.system("i686-elf-gcc -g -ffreestanding -Wall -Wextra -w -O0 -I kernel/include/ -c kernel/src/sys/elf.c -o bin/kernel/sys/elf.o")
 
-    print("Linking kernel")
     os.system("i686-elf-gcc -T kernel/link.ld -nostdlib -lgcc -o isodir/boot/kernel.elf " + OBJ)
 
 
@@ -51,7 +50,6 @@ if __name__ == "__main__":
     try:
         build_all()
 
-        print("Create ata.qcow2")
         if os.path.exists("ata.qcow2"):
             pass
         else:
@@ -65,20 +63,17 @@ if __name__ == "__main__":
 
         os.chdir("../initrd")
 
-        print("Create tar-fs")
         with tarfile.open("../isodir/boot/initrd.tar", "w") as tar:
-            for i in os.listdir("."):
-                tar.add(i)
+            tar.add("apps/")
         
         os.chdir("../")
 
         
-        print("Create SynapseOS.iso")
         if sys.platform == "linux" or sys.platform == "linux2":
             os.system("""grub-mkrescue -o "SynapseOS.iso" isodir/ -V SynapseOS""")
         else:
             os.system("""wsl grub-mkrescue -o "SynapseOS.iso" isodir/ -V SynapseOS """)
 
-        os.system("qemu-system-i386 -m 16 -name SynapseOS -soundhw all -cdrom SynapseOS.iso -hda ata.qcow2 -serial  file:Qemu.log -no-reboot")
+        os.system("qemu-system-i386 -m 4 -name SynapseOS -soundhw all -cdrom SynapseOS.iso -hda ata.qcow2 -serial  file:Qemu.log -no-reboot")
     except Exception as E:
         print(E)
