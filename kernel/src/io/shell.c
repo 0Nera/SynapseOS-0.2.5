@@ -21,7 +21,7 @@ void ksh_main() {
         if (strcmp(cmd, "about") == 0) {
             tty_printf("SynapseOS is a simple x86 C operating system with a well-documented kernel.");
         } else if (strcmp(cmd, "help") == 0) {
-            tty_printf("Commands:\n" \
+            tty_printf("\nCommands:\n" \
                         "->help                |get list of commands\n" \
                         "->cat   <filename>    |open file to read\n" \
                         "->cd    <folder>      |open folder\n" \

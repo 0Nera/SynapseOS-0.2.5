@@ -49,11 +49,12 @@ void syscall_handler(struct regs *r) {
     uint32_t result = -1;
 
     uint32_t* argptr = (uint32_t*) (r->ebx);
+    qemu_printf("argptr[0] = d=%d, c=[%c] s=[%s]\n", argptr[0], argptr[0], argptr[0]);
 
 
     switch (r->eax) {
         case SC_CODE_puts:
-            //tty_printf("str = %x\n", (char*) (argptr[0]));
+            qemu_printf("str = %x\n", (char*) (argptr[0]));
             result = sc_puts((char*) (argptr[0]));
             break;
         case SC_CODE_getscancode:
@@ -72,9 +73,10 @@ void syscall_handler(struct regs *r) {
             result = sc_drawline((int) (argptr[0]), (int) (argptr[1]),(int) (argptr[2]), (int) (argptr[3]), (uint32_t) (argptr[4]));
             break;
         default: 
+            qemu_printf("Invalid syscall #%x\n", r->eax);
             tty_printf("Invalid syscall #%x\n", r->eax);
     }
-    //tty_printf("result = %d, [%c] [%s]\n", result, result, result);
+    qemu_printf("result = %d, [%c] [%s]\n", result, result, result);
     
     r->eax = result;
 
