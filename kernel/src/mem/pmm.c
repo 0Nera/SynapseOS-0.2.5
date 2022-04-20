@@ -59,6 +59,24 @@ void pmm_parse_memory_map(multiboot_memory_map_entry *mmap_addr, uint32_t length
     tty_printf("Available memory size: %d KB", phys_available_memory_size / 1024);
     tty_printf(" = %d MB\n", phys_available_memory_size / (1024 * 1024));
     
+    if (phys_available_memory_size / 1024 < 4600) {
+        tty_setcolor(VESA_LIGHT_RED);
+        tty_printf("\nWarning! Low memory! Using 0 mode.");
+        os_mode = 1;
+    } else if (phys_available_memory_size / 1024 < 13000) {
+        tty_setcolor(VESA_LIGHT_GREEN);
+        tty_printf("\nStable. Using normal mode.");
+        os_mode = 1;
+    } else if (phys_available_memory_size / 1024 >= 13000) {
+        tty_setcolor(VESA_LIGHT_MAGENTA);
+        tty_printf("\n. High mem. Using server mode.");
+        os_mode = 2;
+    } else {
+        tty_setcolor(VESA_LIGHT_GREEN);
+        tty_printf("\nStable. Using normal mode.");
+        os_mode = 1;
+    }
+    tty_setcolor(VESA_LIGHT_CYAN);
 }
 
 int pmm_find_free_block() {

@@ -6,13 +6,13 @@
 
 #include <kernel.h>
 
+int mode = 1; // 0 - мало ОЗУ, 1 - обычный режим, 2 - режим повышенной производительности, 3 - сервер
 
 // Входная точка ядра SynapseOS
 void kernel(int magic_number, struct multiboot_info *mboot_info) {
-    // Настройка графики
-    tty_init(mboot_info);
+    tty_init(mboot_info);   // Настройка графики
     
-    // Вывод информации о ядр
+    // Вывод информации о ядре
     tty_printf("\t\tSynapseOS kernel version: %d.%d.%d, Builded: %s\n", 
         VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH,    // Версия ядра 
         __TIMESTAMP__                                   // Время окончания компиляции ядра
@@ -26,38 +26,29 @@ void kernel(int magic_number, struct multiboot_info *mboot_info) {
             );
     }
 
-    gdt_init();
-
-    idt_init();
-
-
+    gdt_init(); // \    Установка и настройка прерываний 
+    idt_init(); // /
     pmm_init(mboot_info);
 
-    uint32_t initrd_beg = *(uint32_t*) (mboot_info->mods_addr);
-    uint32_t initrd_end = *(uint32_t*) (mboot_info->mods_addr + 4);
-    tty_printf("initrd_beg = %x initrd_end = %x\n", 
-        initrd_beg, initrd_end
+    uint32_t initrd_beg = *(uint32_t*) (mboot_info->mods_addr);     // Адрес начала ramdisk
+    uint32_t initrd_end = *(uint32_t*) (mboot_info->mods_addr + 4); // Адрес конца ramdisk
+    qemu_printf("initrd_beg = %x initrd_end = %x\n", 
+        initrd_beg, initrd_end              // Вывод информации о адресах ramdisk в отладчик
         );
 
-    vmm_init();
+    vmm_init();                             // Инициализация менеджера виртуальной памяти
 
-    kheap_init();
+    kheap_init();                           // Инициализация кучи ядра
 
-    init_vbe(mboot_info);
+    init_vbe(mboot_info);                   // Активация графики 1024x768
 
-    vfs_init();
+    vfs_init();                             // Инициализация виртуальной файловой системы
 
-    initrd_init(initrd_beg, initrd_end);
+    initrd_init(initrd_beg, initrd_end);    // Инициализация ramdisk
 
-    syscall_init();
+    syscall_init();                         // Инициализация системного api для программ
 
-    keyboard_install();
+    keyboard_install();                     // Установка драйвера клавиатуры
     
-    tty_setcolor(VESA_LIGHT_GREY);
-
-    tty_printf("List of files:");
-    initrd_list(0, 0);
-
-
-    ksh_main();
+    ksh_main();                             // Активация терминала
 }

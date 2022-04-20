@@ -39,3 +39,5 @@
 #define dVERSION_MAJOR  0   // Версия дистрибутива
 #define dVERSION_MINOR  0   // Пре-релиз дистрибутива
 #define dVERSION_PATCH  0   // Патч дистрибутива
+
+extern int os_mode;
