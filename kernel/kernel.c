@@ -9,11 +9,13 @@
 
 // Входная точка ядра SynapseOS
 void kernel(int magic_number, struct multiboot_info *mboot_info) {
-    
+    // Настройка графики
     tty_init(mboot_info);
-
-    tty_printf("SynapseOS %d.%d.%d\n", 
-        VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH
+    
+    // Вывод информации о ядр
+    tty_printf("\t\tSynapseOS kernel version: %d.%d.%d, Builded: %s\n", 
+        VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH,    // Версия ядра 
+        __TIMESTAMP__                                   // Время окончания компиляции ядра
         );
     
     // Проверка, является ли сборка дистрибутивом
@@ -24,14 +26,11 @@ void kernel(int magic_number, struct multiboot_info *mboot_info) {
             );
     }
 
-    qemu_putstring("GDT INIT\n");
     gdt_init();
 
-    qemu_putstring("IDT INIT\n");
     idt_init();
 
 
-    qemu_putstring("PMM INIT\n");
     pmm_init(mboot_info);
 
     uint32_t initrd_beg = *(uint32_t*) (mboot_info->mods_addr);
@@ -40,31 +39,24 @@ void kernel(int magic_number, struct multiboot_info *mboot_info) {
         initrd_beg, initrd_end
         );
 
-    qemu_putstring("VMM INIT\n");
     vmm_init();
 
-    qemu_putstring("KHEAP INIT\n");
     kheap_init();
 
-    qemu_putstring("VBE INIT\n");
     init_vbe(mboot_info);
 
-    qemu_putstring("VFS INIT\n");
     vfs_init();
 
-    qemu_putstring("RAMDISK INIT\n");
     initrd_init(initrd_beg, initrd_end);
 
-    qemu_putstring("SYSCALL INIT\n");
     syscall_init();
 
-    qemu_putstring("KEYBOARD INIT\n");
     keyboard_install();
     
     tty_setcolor(VESA_LIGHT_GREY);
 
     tty_printf("List of files:");
-    initrd_list(0, "  ");
+    initrd_list(0, 0);
 
 
     ksh_main();

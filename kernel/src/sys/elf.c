@@ -29,7 +29,8 @@ uint8_t elf_check_header(struct elf_hdr *hdr) {
 
 void *elf_open(const char *fname) { // Returns pointer to ELF file.
     if (!vfs_exists(fname)) {
-        tty_printf("elf [%s] does not exist\n", fname);
+        tty_printf("elf_open: elf [%s] does not exist\n", fname);
+        qemu_printf("elf_open: elf [%s] does not exist\n", fname);
         return 0;
     }
 
@@ -112,7 +113,8 @@ void elf_info_short(const char *name) {
 
 void elf_info(const char *name) {
     if (!vfs_exists(name)) {
-        tty_printf("\nelf [%s] does not exist\n", name);
+        tty_printf("\nelf_info: elf [%s] does not exist\n", name);
+        qemu_printf("\nelf_info: elf [%s] does not exist\n", name);
         return 0;
     }
     void *elf_file = elf_open(name);
@@ -139,7 +141,8 @@ void elf_info(const char *name) {
 
 int run_elf_file(const char *name/*, char **argv, char **env __attribute__((unused)), int argc*/) {
     if (!vfs_exists(name)) {
-        tty_printf("\nelf [%s] does not exist\n", name);
+        tty_printf("\nrun_elf_file: elf [%s] does not exist\n", name);
+        qemu_printf("\nrun_elf_file: elf [%s] does not exist\n", name);
         return 0;
     }
     void *elf_file = elf_open(name);
@@ -150,8 +153,10 @@ int run_elf_file(const char *name/*, char **argv, char **env __attribute__((unus
     struct elf_hdr *hdr = (struct elf_hdr*) elf_file;
 
     qemu_printf("\nloading segments:\n");
-    int i;
-    for (i = 0; i < hdr->ph_ent_cnt; i++) {
+    uint32_t vmm_alloced[4096] = {0};
+    int ptr_vmm_alloced = 0;
+
+    for (int i = 0; i < hdr->ph_ent_cnt; i++) {
         //printf("Segment [%i/%i]: ", i, hdr->ph_ent_cnt);
         struct elf_program_header *phdr = elf_get_program_header(elf_file, i);
         if (phdr->type != SEGTYPE_LOAD) {
@@ -163,8 +168,10 @@ int run_elf_file(const char *name/*, char **argv, char **env __attribute__((unus
         // Alloc needed amount of pages
         uint32_t alloc_addr;
         for (alloc_addr = phdr->load_to;
-             alloc_addr < phdr->load_to + phdr->size_in_mem;
-             alloc_addr += PAGE_SIZE) {
+            alloc_addr < phdr->load_to + phdr->size_in_mem;
+            alloc_addr += PAGE_SIZE) {
+            vmm_alloced[ptr_vmm_alloced] = alloc_addr;
+            ptr_vmm_alloced++;
             vmm_alloc_page(alloc_addr);
         }
 
@@ -181,6 +188,11 @@ int run_elf_file(const char *name/*, char **argv, char **env __attribute__((unus
 
 
     entry_point();
+    qemu_printf("\nCleaning VMM:\n");
+    for (int i = 0; i != ptr_vmm_alloced; i++){
+        qemu_printf("\tCleaning %d: %x\n", i, vmm_alloced[i]);
+        vmm_free_page(vmm_alloced[i]);
+    }
 
     return 0;
 }

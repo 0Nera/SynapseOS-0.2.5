@@ -73,6 +73,6 @@ void syscall_handler(struct regs *r) {
             qemu_printf("Invalid syscall #%x\n", r->eax);
             tty_printf("Invalid syscall #%x\n", r->eax);
     }
-    qemu_printf("result = %d, [%c] [%s]\n", result, result, result);
+    //qemu_printf("result = %d, [%c] [%s]\n", result, result, result);
 
 }
